@@ -1,0 +1,586 @@
+---
+// Terminal Component
+---
+
+<div id="terminal-container" class="terminal-wrapper">
+  <div class="terminal-header">
+    <div class="terminal-buttons">
+      <span class="btn-close"></span>
+      <span class="btn-minimize"></span>
+      <span class="btn-maximize"></span>
+    </div>
+    <div class="terminal-title">
+      <span class="title-desktop">user@50characters:~$</span>
+      <span class="title-mobile">user@50ch:~$</span>
+    </div>
+  </div>
+  <div id="terminal" class="terminal-body"></div>
+</div>
+
+<style>
+  .terminal-wrapper {
+    width: 90%;
+    max-width: 900px;
+    margin: 2rem auto;
+    background: rgba(10, 14, 39, 0.9);
+    border: 2px solid var(--primary);
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+    overflow: hidden;
+  }
+
+  .terminal-header {
+    background: rgba(0, 240, 255, 0.1);
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 1px solid var(--primary);
+  }
+
+  .terminal-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .terminal-buttons span {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: block;
+  }
+
+  .btn-close {
+    background: #ff006e;
+  }
+
+  .btn-minimize {
+    background: #ffbd00;
+  }
+
+  .btn-maximize {
+    background: #00f0ff;
+  }
+
+  .terminal-title {
+    color: var(--primary);
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .title-mobile {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    .title-desktop {
+      display: none;
+    }
+    
+    .title-mobile {
+      display: inline;
+    }
+  }
+
+  .terminal-body {
+    padding: 1.5rem;
+    min-height: 400px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  /* Prompt styling */
+  :global(.terminal-prompt) {
+    color: var(--primary);
+  }
+
+  :global(.terminal-input) {
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: inherit;
+    outline: none;
+    flex: 1;
+  }
+
+  :global(.terminal-line) {
+    display: flex;
+    margin-bottom: 0.5rem;
+  }
+
+  :global(.terminal-output) {
+    color: var(--text);
+    margin-left: 0;
+    white-space: pre-wrap;
+  }
+
+  :global(.terminal-error) {
+    color: var(--accent);
+  }
+
+  :global(.terminal-success) {
+    color: #00ff88;
+  }
+
+  :global(.cursor) {
+    display: inline-block;
+    width: 8px;
+    height: 1.2em;
+    background: var(--primary);
+    animation: blink 1s step-end infinite;
+    margin-left: 2px;
+  }
+</style>
+
+<script>
+  interface FileSystem {
+    [key: string]: any;
+  }
+
+  // Sistema de archivos virtual
+  const fileSystem: FileSystem = {
+    '/home/usuario': {
+      type: 'directory',
+      contents: {
+        'about.md': {
+          type: 'file',
+          content: `# Sobre mí
+
+¡Hola! 👋 Soy un desarrollador web full-stack y entusiasta de Google Cloud Platform.
+
+## Experiencia
+- Desarrollo web moderno con JavaScript/TypeScript
+- Arquitectura en la nube con GCP
+- Optimización de rendimiento y SEO
+- DevOps y CI/CD
+
+## Stack tecnológico favorito
+- Frontend: Astro, TypeScript, Tailwind CSS
+- Backend: Node.js, Python
+- Cloud: Google Cloud Platform
+- Tools: Docker, Git, Linux
+
+📧 Contacto: [Ver contact.sh]
+`
+        },
+        'skills': {
+          type: 'directory',
+          contents: {
+            'gcp.json': {
+              type: 'file',
+              content: JSON.stringify({
+                platform: "Google Cloud Platform",
+                services: [
+                  "Cloud Run",
+                  "Compute Engine",
+                  "Cloud Storage",
+                  "BigQuery",
+                  "Cloud Functions",
+                  "Firebase"
+                ],
+                experience_years: 3
+              }, null, 2)
+            },
+            'frontend.js': {
+              type: 'file',
+              content: `// Frontend Skills
+const skills = {
+  languages: ['JavaScript', 'TypeScript', 'HTML5', 'CSS3'],
+  frameworks: ['Astro', 'Vue.js', 'Svelte'],
+  styling: ['Tailwind CSS', 'CSS-in-JS', 'SASS'],
+  tools: ['Vite', 'Webpack', 'npm/pnpm'],
+  animation: ['GSAP', 'Three.js', 'CSS Animations']
+};
+
+export default skills;`
+            },
+            'backend.py': {
+              type: 'file',
+              content: `# Backend Skills
+skills = {
+    'languages': ['Python', 'Node.js', 'Go'],
+    'frameworks': ['FastAPI', 'Express', 'Flask'],
+    'databases': ['PostgreSQL', 'MongoDB', 'Redis'],
+    'apis': ['REST', 'GraphQL', 'gRPC'],
+    'tools': ['Docker', 'Kubernetes', 'CI/CD']
+}
+
+def get_skills():
+    return skills`
+            }
+          }
+        },
+        'projects': {
+          type: 'directory',
+          contents: {
+            'README.md': {
+              type: 'file',
+              content: '# Proyectos\n\nUsa "ls" para ver los proyectos disponibles.\nUsa "cd proyecto1" para explorar un proyecto específico.'
+            }
+          }
+        },
+        'experience.log': {
+          type: 'file',
+          content: `[2022-01-01] Inicio como desarrollador full-stack
+[2022-06-15] Primera certificación GCP obtenida
+[2023-03-20] Lead developer en proyecto de e-commerce
+[2024-01-10] Certificación Professional Cloud Architect
+[2024-08-15] Arquitecto de soluciones cloud
+[2025-10-12] Portfolio actualizado con nueva estética cyberpunk
+`
+        },
+        'contact.sh': {
+          type: 'file',
+          content: `#!/bin/bash
+# Formulario de contacto
+
+echo "📧 Información de contacto:"
+echo ""
+echo "Email: tu-email@ejemplo.com"
+echo "GitHub: github.com/tu-usuario"
+echo "LinkedIn: linkedin.com/in/tu-perfil"
+echo "Twitter: @tu_usuario"
+echo ""
+echo "💬 ¿Quieres trabajar juntos? ¡Escríbeme!"
+`
+        }
+      }
+    }
+  };
+
+  let currentPath = '/home/usuario';
+  let commandHistory: string[] = [];
+  let historyIndex = -1;
+
+  function getCurrentDirectory(): any {
+    const parts = currentPath.split('/').filter(p => p);
+    let current = fileSystem;
+    
+    for (const part of parts) {
+      if (current[part]) {
+        current = current[part].contents || current[part];
+      }
+    }
+    
+    return current;
+  }
+
+  function resolvePath(path: string): string {
+    if (path.startsWith('/')) {
+      return path;
+    }
+    
+    if (path === '..') {
+      const parts = currentPath.split('/').filter(p => p);
+      parts.pop();
+      return '/' + parts.join('/');
+    }
+    
+    if (path === '.') {
+      return currentPath;
+    }
+    
+    return currentPath + '/' + path;
+  }
+
+  function executeCommand(cmd: string): string {
+    const parts = cmd.trim().split(/\s+/);
+    const command = parts[0];
+    const args = parts.slice(1);
+
+    switch (command) {
+      case '':
+        return '';
+        
+      case 'help':
+        return `Comandos disponibles:
+  ls              - Listar contenido del directorio
+  cd <dir>        - Cambiar de directorio
+  cat <file>      - Mostrar contenido de archivo
+  pwd             - Mostrar directorio actual
+  clear           - Limpiar terminal
+  help            - Mostrar esta ayuda
+  whoami          - Información del usuario
+  
+Easter eggs: ¿Has probado el código Konami? ↑↑↓↓←→←→BA
+            ¿Y el DeLorean? Intenta: 88mph, time-travel, flux-capacitor`;
+
+      case 'whoami':
+        return 'user@50characters - Desarrollador Web & GCP Enthusiast 🚀';
+
+      case 'pwd':
+        return currentPath;
+
+      case 'clear':
+        const terminal = document.getElementById('terminal');
+        if (terminal) {
+          terminal.innerHTML = '';
+          addPrompt();
+        }
+        return '';
+
+      case 'ls':
+        const dir = getCurrentDirectory();
+        if (!dir || typeof dir !== 'object') {
+          return 'Error: No es un directorio válido';
+        }
+        
+        const items = Object.keys(dir).map(name => {
+          const item = dir[name];
+          if (item.type === 'directory') {
+            return `<span style="color: var(--primary); font-weight: 600;">${name}/</span>`;
+          }
+          return `<span style="color: var(--text);">${name}</span>`;
+        });
+        
+        return items.join('  ');
+
+      case 'cd':
+        if (args.length === 0) {
+          currentPath = '/home/usuario';
+          return '';
+        }
+        
+        const newPath = resolvePath(args[0]);
+        const parts = newPath.split('/').filter(p => p);
+        let current: any = fileSystem;
+        
+        for (const part of parts) {
+          if (current[part] && current[part].type === 'directory') {
+            current = current[part].contents;
+          } else if (current[part]) {
+            return `cd: ${args[0]}: No es un directorio`;
+          } else {
+            return `cd: ${args[0]}: No existe el directorio`;
+          }
+        }
+        
+        currentPath = newPath || '/';
+        updatePrompt();
+        return '';
+
+      case 'cat':
+        if (args.length === 0) {
+          return 'cat: falta el operando fichero';
+        }
+        
+        const filePath = args[0];
+        const currentDir = getCurrentDirectory();
+        
+        if (currentDir[filePath] && currentDir[filePath].type === 'file') {
+          return currentDir[filePath].content;
+        }
+        
+        return `cat: ${filePath}: No existe el archivo`;
+
+      case 'sudo':
+        if (args[0] === 'make-coffee') {
+          return '☕ Preparando café... ERROR: No se encontró cafetera conectada al sistema';
+        }
+        return 'sudo: Permiso denegado. Este portfolio es de solo lectura 😉';
+
+      // Easter eggs del DeLorean
+      case '88mph':
+      case 'time-travel':
+      case 'flux-capacitor':
+        // Emitir evento para que el DeLorean reaccione
+        document.dispatchEvent(new CustomEvent('terminal-command', { 
+          detail: { command } 
+        }));
+        
+        if (command === '88mph') {
+          return `🚗💨 ¡Acelerando a 88 MPH!
+⚡ Flux Capacitor: ACTIVADO
+⏰ Viajando en el tiempo... ¡Mira el DeLorean! 🌟`;
+        } else if (command === 'time-travel') {
+          return `🕐 Iniciando secuencia de viaje temporal...
+🔋 Cargando condensador de flujo...
+⚡ ¡Bienvenido al futuro! (o al pasado... no estamos seguros)`;
+        } else if (command === 'flux-capacitor') {
+          return `⚡ Flux Capacitor v2.0
+Estado: OPERACIONAL
+Plutonio: 100%
+Fecha destino: 21 Oct 2015
+¡Listo para viajar en el tiempo! 🚀`;
+        }
+        return '';
+
+      default:
+        return `bash: ${command}: command not found. Usa 'help' para ver comandos disponibles.`;
+    }
+  }
+
+  function updatePrompt() {
+    const prompts = document.querySelectorAll('.terminal-prompt');
+    const lastPrompt = prompts[prompts.length - 1];
+    if (lastPrompt) {
+      const displayPath = currentPath === '/home/usuario' ? '~' : currentPath.replace('/home/usuario', '~');
+      const isMobile = window.innerWidth < 768;
+      const hostname = isMobile ? 'ld' : '50characters';
+      lastPrompt.textContent = `user@${hostname}:${displayPath}$ `;
+    }
+  }
+
+  function addPrompt() {
+    const terminal = document.getElementById('terminal');
+    if (!terminal) return;
+
+    const displayPath = currentPath === '/home/usuario' ? '~' : currentPath.replace('/home/usuario', '~');
+    const isMobile = window.innerWidth < 768;
+    const hostname = isMobile ? 'ld' : '50characters';
+    
+    const line = document.createElement('div');
+    line.className = 'terminal-line';
+    line.innerHTML = `
+      <span class="terminal-prompt">user@${hostname}:${displayPath}$ </span>
+      <input type="text" class="terminal-input" autofocus />
+      <span class="cursor"></span>
+    `;
+    
+    terminal.appendChild(line);
+    
+    const input = line.querySelector('.terminal-input') as HTMLInputElement;
+    const cursor = line.querySelector('.cursor') as HTMLElement;
+    
+    if (input) {
+      input.focus();
+      
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const command = input.value;
+          
+          if (command.trim()) {
+            commandHistory.push(command);
+            historyIndex = commandHistory.length;
+          }
+          
+          input.disabled = true;
+          cursor.remove();
+          
+          const output = executeCommand(command);
+          
+          if (output && command.trim() !== 'clear') {
+            const outputDiv = document.createElement('div');
+            outputDiv.className = 'terminal-output';
+            outputDiv.innerHTML = output;
+            terminal.appendChild(outputDiv);
+          }
+          
+          if (command.trim() !== 'clear') {
+            addPrompt();
+          }
+          
+          terminal.scrollTop = terminal.scrollHeight;
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          if (historyIndex > 0) {
+            historyIndex--;
+            input.value = commandHistory[historyIndex];
+          }
+        } else if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          if (historyIndex < commandHistory.length - 1) {
+            historyIndex++;
+            input.value = commandHistory[historyIndex];
+          } else {
+            historyIndex = commandHistory.length;
+            input.value = '';
+          }
+        } else if (e.key === 'Tab') {
+          e.preventDefault();
+          // TODO: Implementar autocompletado
+        }
+      });
+
+      input.addEventListener('blur', () => {
+        setTimeout(() => input.focus(), 10);
+      });
+    }
+  }
+
+  // Mensaje de bienvenida
+  function initTerminal() {
+    const terminal = document.getElementById('terminal');
+    if (!terminal) return;
+
+    const isMobile = window.innerWidth < 768;
+
+    // Desktop: Versión con cuadro y efectos neón
+    const skillsBox = `
+<span style="color: var(--primary); text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary);">+---------------------------------------------------------------+</span>
+<span style="color: var(--primary); text-shadow: 0 0 10px var(--primary);">|</span>  <span style="color: var(--text); font-weight: 700;">Desarrollador Full-Stack & Cloud Architect</span>                  <span style="color: var(--primary); text-shadow: 0 0 10px var(--primary);">|</span>
+<span style="color: var(--accent); text-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent);">+---------------------------------------------------------------+</span>
+<span style="color: var(--primary); text-shadow: 0 0 10px var(--primary);">|</span>  🚀 Web Development: JavaScript/TypeScript, HTML5, CSS3       <span style="color: var(--primary); text-shadow: 0 0 10px var(--primary);">|</span>
+<span style="color: var(--primary); text-shadow: 0 0 10px var(--primary);">|</span>  ⚡ Frameworks: Spring Boot, Angular, Astro, Vue.js           <span style="color: var(--primary); text-shadow: 0 0 10px var(--primary);">|</span>
+<span style="color: var(--primary); text-shadow: 0 0 10px var(--primary);">|</span>  🐍 Backend: PHP, Python, Node.js                             <span style="color: var(--primary); text-shadow: 0 0 10px var(--primary);">|</span>
+<span style="color: var(--primary); text-shadow: 0 0 10px var(--primary);">|</span>  ☁️  Google Cloud Platform Enthusiast                         <span style="color: var(--primary); text-shadow: 0 0 10px var(--primary);">|</span>
+<span style="color: var(--primary); text-shadow: 0 0 10px var(--primary);">|</span>  🎨 UI/UX: Tailwind CSS, Responsive Design, Performance       <span style="color: var(--primary); text-shadow: 0 0 10px var(--primary);">|</span>
+<span style="color: var(--primary); text-shadow: 0 0 10px var(--primary);">|</span>  🔧 DevOps: Docker, CI/CD, Git, Linux                         <span style="color: var(--primary); text-shadow: 0 0 10px var(--primary);">|</span>
+<span style="color: var(--primary); text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary);">+---------------------------------------------------------------+</span>`;
+
+    // Mobile: Versión minimalista sin recuadro
+    const skillsBoxMobile = `
+<span style="color: var(--text); font-weight: 700; font-size: 1.1rem; text-shadow: 0 0 10px var(--primary);">💻 Full-Stack Developer</span>
+
+<span style="color: var(--primary); text-shadow: 0 0 8px var(--primary);">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+
+🚀 <span style="color: var(--text);">JS/TS, HTML5, CSS3</span>
+⚡ <span style="color: var(--text);">Spring Boot, Angular, Astro</span>
+🐍 <span style="color: var(--text);">PHP, Python, Node.js</span>
+☁️  <span style="color: var(--text);">Google Cloud Platform</span>
+🎨 <span style="color: var(--text);">Tailwind, Responsive Design</span>
+🔧 <span style="color: var(--text);">Docker, CI/CD, Git, Linux</span>
+
+<span style="color: var(--primary); text-shadow: 0 0 8px var(--primary);">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>`;
+
+    const skillsDisplay = isMobile ? skillsBoxMobile : skillsBox;
+
+    const welcome = `
+<span style="color: var(--primary); font-weight: 600;">${skillsDisplay}</span>
+
+<span style="color: var(--text);">Bienvenido al portfolio interactivo v1.0.0</span>
+<span style="color: var(--accent);">Escribe 'help' para ver los comandos disponibles</span>
+
+`;
+
+    const welcomeDiv = document.createElement('div');
+    welcomeDiv.className = 'terminal-output';
+    welcomeDiv.innerHTML = welcome;
+    terminal.appendChild(welcomeDiv);
+
+    addPrompt();
+  }
+
+  // Código Konami (Easter Egg)
+  const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+  let konamiIndex = 0;
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === konamiCode[konamiIndex]) {
+      konamiIndex++;
+      if (konamiIndex === konamiCode.length) {
+        document.body.style.filter = 'hue-rotate(180deg)';
+        document.body.style.transition = 'filter 0.5s ease';
+        konamiIndex = 0;
+      }
+    } else {
+      konamiIndex = 0;
+    }
+  });
+
+  // Actualizar prompts en resize
+  window.addEventListener('resize', () => {
+    updatePrompt();
+  });
+
+  // Inicializar terminal cuando el DOM esté listo
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTerminal);
+  } else {
+    initTerminal();
+  }
+</script>

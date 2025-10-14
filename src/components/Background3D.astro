@@ -1,0 +1,294 @@
+---
+// Background 3D con Three.js - Grid isométrico animado
+---
+
+<canvas id="bg-canvas"></canvas>
+
+<style>
+  #bg-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
+</style>
+
+<script>
+  import * as THREE from 'three';
+
+  function initBackground() {
+    const canvas = document.getElementById('bg-canvas') as HTMLCanvasElement;
+    if (!canvas) return;
+
+    // Scene setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
+
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      alpha: true,
+      antialias: true
+    });
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    camera.position.z = 5;
+    camera.position.y = 2;
+    camera.lookAt(0, 0, 0);
+
+    // Grid isométrico
+    const gridSize = 50;
+    const gridDivisions = 50;
+    const gridHelper = new THREE.GridHelper(
+      gridSize,
+      gridDivisions,
+      0x00f0ff,
+      0x00f0ff
+    );
+    
+    gridHelper.material.opacity = 0.15;
+    gridHelper.material.transparent = true;
+    gridHelper.rotation.x = Math.PI / 4;
+    gridHelper.position.y = -2;
+    
+    scene.add(gridHelper);
+
+    // Partículas flotantes
+    const particlesGeometry = new THREE.BufferGeometry();
+    const particlesCount = 1000;
+    const posArray = new Float32Array(particlesCount * 3);
+
+    for (let i = 0; i < particlesCount * 3; i++) {
+      posArray[i] = (Math.random() - 0.5) * 50;
+    }
+
+    particlesGeometry.setAttribute(
+      'position',
+      new THREE.BufferAttribute(posArray, 3)
+    );
+
+    const particlesMaterial = new THREE.PointsMaterial({
+      size: 0.02,
+      color: 0x00f0ff,
+      transparent: true,
+      opacity: 0.6,
+      blending: THREE.AdditiveBlending
+    });
+
+    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particlesMesh);
+
+    // Líneas de neón decorativas
+    const lineMaterial = new THREE.LineBasicMaterial({
+      color: 0xff006e,
+      transparent: true,
+      opacity: 0.3
+    });
+
+    const points = [];
+    for (let i = 0; i < 5; i++) {
+      points.push(
+        new THREE.Vector3(
+          Math.sin(i * 0.5) * 3,
+          Math.cos(i * 0.5) * 3,
+          i - 2
+        )
+      );
+    }
+
+    const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+    const line = new THREE.Line(lineGeometry, lineMaterial);
+    scene.add(line);
+
+    // Motos de Tron circulando
+    class LightCycle {
+      mesh: THREE.Group;
+      trail: THREE.Line;
+      trailPositions: THREE.Vector3[];
+      speed: number;
+      radius: number;
+      angle: number;
+      color: number;
+      direction: number;
+
+      constructor(color: number, radius: number, startAngle: number, direction: number = 1) {
+        this.color = color;
+        this.radius = radius;
+        this.angle = startAngle;
+        this.speed = 0.01;
+        this.direction = direction;
+        this.trailPositions = [];
+
+        // Crear grupo para la moto
+        this.mesh = new THREE.Group();
+
+        // Cuerpo de la moto (simple)
+        const bodyGeometry = new THREE.BoxGeometry(0.1, 0.05, 0.2);
+        const bodyMaterial = new THREE.MeshBasicMaterial({
+          color: color,
+          transparent: true,
+          opacity: 0.9
+        });
+        const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+        this.mesh.add(body);
+
+        // Luz frontal
+        const lightGeometry = new THREE.SphereGeometry(0.03, 8, 8);
+        const lightMaterial = new THREE.MeshBasicMaterial({
+          color: color,
+          transparent: true,
+          opacity: 1
+        });
+        const light = new THREE.Mesh(lightGeometry, lightMaterial);
+        light.position.z = 0.12;
+        this.mesh.add(light);
+
+        // Estela (trail)
+        const trailMaterial = new THREE.LineBasicMaterial({
+          color: color,
+          transparent: true,
+          opacity: 0.6,
+          linewidth: 2
+        });
+        const trailGeometry = new THREE.BufferGeometry();
+        this.trail = new THREE.Line(trailGeometry, trailMaterial);
+        scene.add(this.trail);
+        scene.add(this.mesh);
+      }
+
+      update() {
+        // Movimiento circular
+        this.angle += this.speed * this.direction;
+        
+        const x = Math.cos(this.angle) * this.radius;
+        const z = Math.sin(this.angle) * this.radius;
+        const y = -1.5;
+
+        this.mesh.position.set(x, y, z);
+        
+        // Rotar la moto hacia la dirección del movimiento
+        this.mesh.rotation.y = -this.angle + (this.direction === 1 ? Math.PI / 2 : -Math.PI / 2);
+
+        // Actualizar estela
+        this.trailPositions.push(new THREE.Vector3(x, y, z));
+        
+        // Limitar longitud de la estela
+        if (this.trailPositions.length > 50) {
+          this.trailPositions.shift();
+        }
+
+        // Actualizar geometría de la estela con fade
+        const positions: number[] = [];
+        this.trailPositions.forEach((pos) => {
+          positions.push(pos.x, pos.y, pos.z);
+        });
+
+        this.trail.geometry.setAttribute(
+          'position',
+          new THREE.Float32BufferAttribute(positions, 3)
+        );
+        this.trail.geometry.attributes.position.needsUpdate = true;
+      }
+
+      dispose() {
+        this.mesh.traverse((child) => {
+          if (child instanceof THREE.Mesh) {
+            child.geometry.dispose();
+            if (Array.isArray(child.material)) {
+              child.material.forEach(m => m.dispose());
+            } else {
+              child.material.dispose();
+            }
+          }
+        });
+        this.trail.geometry.dispose();
+        if (Array.isArray(this.trail.material)) {
+          this.trail.material.forEach(m => m.dispose());
+        } else {
+          this.trail.material.dispose();
+        }
+      }
+    }
+
+    // Crear varias motos con diferentes colores y trayectorias
+    const lightCycles: LightCycle[] = [
+      new LightCycle(0x00f0ff, 8, 0, 1),           // Cyan, sentido horario
+      new LightCycle(0xff006e, 10, Math.PI, -1),   // Magenta, sentido antihorario
+      new LightCycle(0x00f0ff, 12, Math.PI / 2, 1), // Cyan, órbita mayor
+      new LightCycle(0xff006e, 6, Math.PI * 1.5, -1), // Magenta, órbita menor
+    ];
+
+    // Mouse movement
+    let mouseX = 0;
+    let mouseY = 0;
+
+    document.addEventListener('mousemove', (event) => {
+      mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+      mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+    });
+
+    // Animation loop
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      const elapsedTime = clock.getElapsedTime();
+
+      // Rotar el grid suavemente
+      gridHelper.rotation.z = elapsedTime * 0.05;
+
+      // Animar partículas
+      particlesMesh.rotation.y = elapsedTime * 0.05;
+      particlesMesh.rotation.x = elapsedTime * 0.03;
+
+      // Animar líneas
+      line.rotation.x = elapsedTime * 0.1;
+      line.rotation.y = elapsedTime * 0.15;
+
+      // Actualizar motos de Tron
+      lightCycles.forEach(cycle => cycle.update());
+
+      // Seguir el mouse sutilmente
+      camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
+      camera.position.y += (mouseY * 0.5 - camera.position.y) * 0.05;
+      camera.lookAt(0, 0, 0);
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // Handle resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // Cleanup
+    return () => {
+      lightCycles.forEach(cycle => cycle.dispose());
+      renderer.dispose();
+      particlesGeometry.dispose();
+      particlesMaterial.dispose();
+      lineGeometry.dispose();
+      lineMaterial.dispose();
+    };
+  }
+
+  // Inicializar cuando el DOM esté listo
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBackground);
+  } else {
+    initBackground();
+  }
+</script>

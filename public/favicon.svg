@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <!-- Glow effect -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Neon gradient -->
+    <linearGradient id="neonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00f0ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ff006e;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="128" height="128" fill="#0a0e27" rx="8"/>
+  
+  <!-- Grid pattern -->
+  <line x1="32" y1="0" x2="32" y2="128" stroke="rgba(0, 240, 255, 0.1)" stroke-width="1"/>
+  <line x1="64" y1="0" x2="64" y2="128" stroke="rgba(0, 240, 255, 0.1)" stroke-width="1"/>
+  <line x1="96" y1="0" x2="96" y2="128" stroke="rgba(0, 240, 255, 0.1)" stroke-width="1"/>
+  <line x1="0" y1="32" x2="128" y2="32" stroke="rgba(0, 240, 255, 0.1)" stroke-width="1"/>
+  <line x1="0" y1="64" x2="128" y2="64" stroke="rgba(0, 240, 255, 0.1)" stroke-width="1"/>
+  <line x1="0" y1="96" x2="128" y2="96" stroke="rgba(0, 240, 255, 0.1)" stroke-width="1"/>
+  
+  <!-- Text "L5D0" with monospace style -->
+  <text 
+    x="64" 
+    y="78" 
+    font-family="monospace" 
+    font-size="48" 
+    font-weight="bold" 
+    fill="url(#neonGradient)" 
+    text-anchor="middle" 
+    filter="url(#glow)">L5D0</text>
+</svg>

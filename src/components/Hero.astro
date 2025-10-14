@@ -1,0 +1,227 @@
+---
+// Hero Section con ASCII Art animado
+import logoDesktop from '../ascii/logo-desktop.txt?raw';
+import logoMobile from '../ascii/logo-mobile.txt?raw';
+---
+
+<section class="hero">
+  <div class="hero-content">
+    <div id="ascii-art" class="ascii-art"></div>
+    <p class="hero-subtitle glow">
+      <span id="typed-text"></span>
+      <span class="cursor-blink">_</span>
+    </p>
+    <div class="hero-cta">
+      <button class="btn-primary">Explorar Portfolio</button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+  }
+
+  .hero-content {
+    text-align: center;
+    z-index: 1;
+  }
+
+  .ascii-art {
+    font-size: clamp(0.4rem, 1vw, 0.8rem);
+    line-height: 1;
+    color: var(--primary);
+    font-weight: 600;
+    margin-bottom: 2rem;
+    white-space: pre;
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 0 10px var(--primary);
+  }
+
+  .hero-subtitle {
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    margin-bottom: 3rem;
+    min-height: 2em;
+  }
+
+  .cursor-blink {
+    animation: blink 1s step-end infinite;
+    color: var(--primary);
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 0.75rem 2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    font-weight: 500;
+    border: 2px solid;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .btn-primary {
+    background: var(--primary);
+    color: var(--bg-dark);
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+  }
+
+  .btn-primary:hover {
+    background: transparent;
+    color: var(--primary);
+    box-shadow: 0 0 30px rgba(0, 240, 255, 0.5);
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .btn-secondary:hover {
+    background: var(--accent);
+    color: var(--bg-dark);
+    box-shadow: 0 0 20px rgba(255, 0, 110, 0.5);
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 768px) {
+    .ascii-art {
+      font-size: 0.3rem;
+    }
+
+    .hero-cta {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+      width: 100%;
+      max-width: 300px;
+    }
+  }
+</style>
+
+<script define:vars={{ logoDesktop, logoMobile }}>
+  function initHero() {
+    // ASCII art con nombre (responsive)
+    const isMobile = window.innerWidth < 768;
+    const asciiArt = isMobile ? logoMobile : logoDesktop;
+
+    const asciiElement = document.getElementById('ascii-art');
+    if (asciiElement) {
+      // Efecto de renderizado línea por línea
+      const lines = asciiArt.split('\n');
+      let currentLine = 0;
+
+      const renderInterval = setInterval(() => {
+        if (currentLine < lines.length) {
+          asciiElement.textContent += lines[currentLine] + '\n';
+          currentLine++;
+        } else {
+          clearInterval(renderInterval);
+        }
+      }, 50);
+    }
+
+    // Efecto de texto tipo máquina de escribir
+    const texts = [
+      '50characters - Desarrollador Web Full-Stack',
+      'Google Cloud Platform Enthusiast',
+      'Arquitecto de Soluciones Cloud',
+      'DevOps & CI/CD Specialist'
+    ];
+
+    let textIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    const typedTextElement = document.getElementById('typed-text');
+
+    function typeWriter() {
+      if (!typedTextElement) return;
+
+      const currentText = texts[textIndex];
+
+      if (isDeleting) {
+        typedTextElement.textContent = currentText.substring(0, charIndex - 1);
+        charIndex--;
+      } else {
+        typedTextElement.textContent = currentText.substring(0, charIndex + 1);
+        charIndex++;
+      }
+
+      let typeSpeed = isDeleting ? 50 : 100;
+
+      if (!isDeleting && charIndex === currentText.length) {
+        typeSpeed = 2000; // Pausa al final
+        isDeleting = true;
+      } else if (isDeleting && charIndex === 0) {
+        isDeleting = false;
+        textIndex = (textIndex + 1) % texts.length;
+        typeSpeed = 500; // Pausa antes de escribir el siguiente
+      }
+
+      setTimeout(typeWriter, typeSpeed);
+    }
+
+    // Iniciar después de que se renderice el ASCII art
+    setTimeout(() => {
+      typeWriter();
+    }, lines.length * 50 + 500);
+
+    // Scroll suave para los botones
+    const btnPrimary = document.querySelector('.btn-primary');
+    if (btnPrimary) {
+      btnPrimary.addEventListener('click', () => {
+        const terminal = document.getElementById('terminal-container');
+        if (terminal) {
+          terminal.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    }
+
+    // Actualizar ASCII art en resize
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        const newIsMobile = window.innerWidth < 768;
+        if (newIsMobile !== isMobile && asciiElement) {
+          const newAsciiArt = newIsMobile ? logoMobile : logoDesktop;
+          asciiElement.textContent = '';
+          const lines = newAsciiArt.split('\n');
+          lines.forEach((line, index) => {
+            setTimeout(() => {
+              asciiElement.textContent += line + '\n';
+            }, index * 30);
+          });
+        }
+      }, 250);
+    });
+  }
+
+  // Inicializar cuando el DOM esté listo
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initHero);
+  } else {
+    initHero();
+  }
+</script>

@@ -1,0 +1,509 @@
+---
+// DeLorean SVG con estilo neón - Ready Player One vibes
+---
+
+<div class="delorean-container">
+  <svg
+    class="delorean"
+    viewBox="0 0 400 200"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <!-- Definiciones de gradientes y filtros -->
+    <defs>
+      <!-- Glow effect para neón -->
+      <filter id="neon-glow">
+        <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+
+      <!-- Glow más intenso -->
+      <filter id="strong-glow">
+        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+
+      <!-- Gradiente cyan neón -->
+      <linearGradient id="cyan-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:1" />
+        <stop offset="50%" style="stop-color:#00f0ff;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#00d4ff;stop-opacity:1" />
+      </linearGradient>
+
+      <!-- Gradiente rosa neón -->
+      <linearGradient id="magenta-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" style="stop-color:#ff006e;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#ff1a85;stop-opacity:1" />
+      </linearGradient>
+    </defs>
+
+    <!-- Trail lines (estelas de velocidad) -->
+    <g class="trail-lines" opacity="0.3">
+      <line x1="50" y1="100" x2="10" y2="100" stroke="url(#cyan-gradient)" stroke-width="1" class="trail trail-1"/>
+      <line x1="50" y1="110" x2="15" y2="110" stroke="url(#cyan-gradient)" stroke-width="1" class="trail trail-2"/>
+      <line x1="50" y1="120" x2="20" y2="120" stroke="url(#cyan-gradient)" stroke-width="1" class="trail trail-3"/>
+    </g>
+
+    <!-- Cuerpo del DeLorean -->
+    <g class="delorean-body">
+      <!-- Base del coche -->
+      <path
+        d="M 80 130 L 320 130 L 310 145 L 90 145 Z"
+        fill="none"
+        stroke="url(#cyan-gradient)"
+        stroke-width="2"
+        filter="url(#neon-glow)"
+        class="body-outline"
+      />
+
+      <!-- Capó -->
+      <path
+        d="M 80 130 L 120 95 L 200 95 L 240 110 L 320 130"
+        fill="none"
+        stroke="url(#cyan-gradient)"
+        stroke-width="2"
+        filter="url(#neon-glow)"
+      />
+
+      <!-- Parabrisas -->
+      <path
+        d="M 140 95 L 160 75 L 220 75 L 230 95"
+        fill="none"
+        stroke="#00f0ff"
+        stroke-width="2"
+        filter="url(#neon-glow)"
+        opacity="0.7"
+      />
+
+      <!-- Ventana lateral -->
+      <path
+        d="M 230 95 L 240 85 L 290 100 L 285 110"
+        fill="none"
+        stroke="#00f0ff"
+        stroke-width="1.5"
+        opacity="0.5"
+      />
+
+      <!-- Líneas de detalle del cuerpo -->
+      <line x1="120" y1="110" x2="300" y2="110" stroke="#00f0ff" stroke-width="1" opacity="0.4"/>
+      <line x1="125" y1="120" x2="295" y2="120" stroke="#00f0ff" stroke-width="1" opacity="0.3"/>
+
+      <!-- Puerta (líneas verticales) -->
+      <line x1="180" y1="95" x2="180" y2="130" stroke="url(#cyan-gradient)" stroke-width="1.5" opacity="0.6"/>
+      
+      <!-- Panel lateral distintivo -->
+      <path
+        d="M 250 115 L 290 115 L 285 125 L 255 125 Z"
+        fill="none"
+        stroke="url(#magenta-gradient)"
+        stroke-width="1.5"
+        filter="url(#neon-glow)"
+        class="side-panel"
+      />
+    </g>
+
+    <!-- Ruedas -->
+    <g class="wheels">
+      <!-- Rueda trasera -->
+      <circle cx="110" cy="145" r="12" fill="none" stroke="url(#cyan-gradient)" stroke-width="2" filter="url(#neon-glow)"/>
+      <circle cx="110" cy="145" r="8" fill="none" stroke="#00f0ff" stroke-width="1" opacity="0.5"/>
+      <circle cx="110" cy="145" r="3" fill="#00f0ff" filter="url(#strong-glow)" class="wheel-center"/>
+
+      <!-- Rueda delantera -->
+      <circle cx="290" cy="145" r="12" fill="none" stroke="url(#cyan-gradient)" stroke-width="2" filter="url(#neon-glow)"/>
+      <circle cx="290" cy="145" r="8" fill="none" stroke="#00f0ff" stroke-width="1" opacity="0.5"/>
+      <circle cx="290" cy="145" r="3" fill="#00f0ff" filter="url(#strong-glow)" class="wheel-center"/>
+    </g>
+
+    <!-- Luces traseras -->
+    <g class="rear-lights">
+      <rect x="85" y="125" width="8" height="4" fill="#ff006e" filter="url(#strong-glow)" class="tail-light"/>
+      <rect x="85" y="135" width="8" height="4" fill="#ff006e" filter="url(#strong-glow)" class="tail-light"/>
+    </g>
+
+    <!-- Luces delanteras -->
+    <g class="front-lights">
+      <circle cx="315" cy="125" r="3" fill="#00f0ff" filter="url(#strong-glow)" class="headlight"/>
+      <circle cx="315" cy="135" r="3" fill="#00f0ff" filter="url(#strong-glow)" class="headlight"/>
+    </g>
+
+    <!-- Detalles especiales: Flux Capacitor hint -->
+    <g class="flux-capacitor" opacity="0.8">
+      <circle cx="200" cy="85" r="4" fill="none" stroke="url(#magenta-gradient)" stroke-width="1" class="flux-ring"/>
+      <circle cx="200" cy="85" r="2" fill="#ff006e" filter="url(#strong-glow)" class="flux-core"/>
+    </g>
+
+    <!-- Ground reflection -->
+    <g class="ground-reflection" opacity="0.2">
+      <ellipse cx="200" cy="160" rx="100" ry="8" fill="url(#cyan-gradient)" filter="url(#neon-glow)"/>
+    </g>
+  </svg>
+</div>
+
+<style>
+  .delorean-container {
+    position: fixed;
+    bottom: 8%;
+    right: 18%;
+    width: 250px;
+    height: 125px;
+    z-index: 10;
+    pointer-events: auto;
+    opacity: 0.8;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    cursor: pointer;
+  }
+
+  .delorean-container:hover {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+
+  .delorean {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 25px rgba(0, 240, 255, 0.4));
+    transition: filter 0.3s ease;
+  }
+
+  .delorean-container:hover .delorean {
+    filter: drop-shadow(0 0 40px rgba(0, 240, 255, 0.8))
+           drop-shadow(0 0 20px rgba(255, 0, 110, 0.4));
+  }
+
+  /* Animación de las ruedas */
+  .wheel-center {
+    animation: wheel-spin 1s linear infinite;
+  }
+
+  @keyframes wheel-spin {
+    from {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.3;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Animación de las estelas */
+  .trail {
+    animation: trail-fade 1.5s ease-in-out infinite;
+  }
+
+  .trail-1 {
+    animation-delay: 0s;
+  }
+
+  .trail-2 {
+    animation-delay: 0.3s;
+  }
+
+  .trail-3 {
+    animation-delay: 0.6s;
+  }
+
+  @keyframes trail-fade {
+    0%, 100% {
+      opacity: 0;
+      stroke-width: 1;
+    }
+    50% {
+      opacity: 0.6;
+      stroke-width: 2;
+    }
+  }
+
+  /* Pulsación de las luces traseras */
+  .tail-light {
+    animation: tail-light-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes tail-light-pulse {
+    0%, 100% {
+      opacity: 0.6;
+    }
+    50% {
+      opacity: 1;
+      filter: url(#strong-glow) brightness(1.5);
+    }
+  }
+
+  /* Pulsación de las luces delanteras */
+  .headlight {
+    animation: headlight-pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes headlight-pulse {
+    0%, 100% {
+      opacity: 0.8;
+    }
+    50% {
+      opacity: 1;
+      filter: url(#strong-glow) brightness(1.8);
+    }
+  }
+
+  /* Animación del Flux Capacitor */
+  .flux-core {
+    animation: flux-pulse 1s ease-in-out infinite;
+  }
+
+  .flux-ring {
+    animation: flux-ring-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes flux-pulse {
+    0%, 100% {
+      opacity: 0.5;
+      r: 2;
+    }
+    50% {
+      opacity: 1;
+      r: 3;
+    }
+  }
+
+  @keyframes flux-ring-pulse {
+    0%, 100% {
+      opacity: 0.3;
+      stroke-width: 1;
+    }
+    50% {
+      opacity: 0.8;
+      stroke-width: 2;
+    }
+  }
+
+  /* Panel lateral con brillo */
+  .side-panel {
+    animation: panel-glow 3s ease-in-out infinite;
+  }
+
+  @keyframes panel-glow {
+    0%, 100% {
+      opacity: 0.6;
+    }
+    50% {
+      opacity: 1;
+      filter: url(#strong-glow);
+    }
+  }
+
+  /* Animación del reflejo en el suelo */
+  .ground-reflection {
+    animation: reflection-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes reflection-pulse {
+    0%, 100% {
+      opacity: 0.1;
+    }
+    50% {
+      opacity: 0.3;
+    }
+  }
+
+  /* Hover effect - el coche se "acelera" */
+  .delorean-container:hover .trail {
+    animation-duration: 0.8s;
+  }
+
+  .delorean-container:hover .wheel-center {
+    animation-duration: 0.5s;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .delorean-container {
+      width: 180px;
+      height: 90px;
+      bottom: 5%;
+      right: 3%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .delorean-container {
+      width: 140px;
+      height: 70px;
+      bottom: 3%;
+      right: 2%;
+      opacity: 0.6;
+    }
+  }
+
+  /* Easter egg: Time Travel Animation - Mejorado */
+  .delorean-container.time-travel {
+    animation: time-travel-epic 3s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+    z-index: 9999;
+  }
+
+  @keyframes time-travel-epic {
+    0% {
+      transform: scale(1) translateX(0) translateY(0) rotate(0deg);
+      opacity: 1;
+      filter: drop-shadow(0 0 25px rgba(0, 240, 255, 0.4));
+    }
+    10% {
+      transform: scale(1.1) translateX(20px) translateY(-10px) rotate(-2deg);
+      opacity: 1;
+      filter: drop-shadow(0 0 35px rgba(0, 240, 255, 0.6))
+             drop-shadow(0 0 20px rgba(255, 0, 110, 0.4));
+    }
+    25% {
+      transform: scale(1.3) translateX(100px) translateY(-30px) rotate(-5deg);
+      opacity: 1;
+      filter: drop-shadow(0 0 50px rgba(0, 240, 255, 0.9))
+             drop-shadow(0 0 40px rgba(255, 0, 110, 0.7))
+             drop-shadow(0 0 60px rgba(255, 255, 255, 0.5));
+    }
+    40% {
+      transform: scale(1.5) translateX(200px) translateY(-60px) rotate(-8deg);
+      opacity: 1;
+      filter: drop-shadow(0 0 70px rgba(0, 240, 255, 1))
+             drop-shadow(0 0 60px rgba(255, 0, 110, 1))
+             drop-shadow(0 0 80px rgba(255, 255, 255, 0.8))
+             brightness(1.5);
+    }
+    55% {
+      transform: scale(1.8) translateX(350px) translateY(-100px) rotate(-12deg);
+      opacity: 0.9;
+      filter: drop-shadow(0 0 90px rgba(0, 240, 255, 1))
+             drop-shadow(0 0 80px rgba(255, 0, 110, 1))
+             drop-shadow(0 0 100px rgba(255, 255, 255, 1))
+             brightness(2);
+    }
+    70% {
+      transform: scale(1.5) translateX(500px) translateY(-150px) rotate(-15deg);
+      opacity: 0.7;
+      filter: drop-shadow(0 0 70px rgba(0, 240, 255, 0.8))
+             drop-shadow(0 0 60px rgba(255, 0, 110, 0.8))
+             brightness(1.8);
+    }
+    85% {
+      transform: scale(1) translateX(700px) translateY(-200px) rotate(-18deg);
+      opacity: 0.3;
+      filter: drop-shadow(0 0 40px rgba(0, 240, 255, 0.5))
+             drop-shadow(0 0 30px rgba(255, 0, 110, 0.5))
+             brightness(1.3);
+    }
+    100% {
+      transform: scale(0.3) translateX(900px) translateY(-250px) rotate(-22deg);
+      opacity: 0;
+      filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.2))
+             brightness(1);
+    }
+  }
+
+  /* Animación de las estelas durante time-travel */
+  .delorean-container.time-travel .trail {
+    animation: trail-time-travel 0.3s ease-in-out infinite;
+  }
+
+  @keyframes trail-time-travel {
+    0%, 100% {
+      opacity: 1;
+      stroke-width: 4;
+    }
+    50% {
+      opacity: 0.8;
+      stroke-width: 6;
+    }
+  }
+
+  /* Animación de ruedas durante time-travel */
+  .delorean-container.time-travel .wheel-center {
+    animation: wheel-time-travel 0.1s linear infinite;
+  }
+
+  @keyframes wheel-time-travel {
+    from { opacity: 1; }
+    to { opacity: 0.2; }
+  }
+
+  /* Flux capacitor super brillante durante time-travel */
+  .delorean-container.time-travel .flux-core {
+    animation: flux-overload 0.2s ease-in-out infinite;
+  }
+
+  @keyframes flux-overload {
+    0%, 100% {
+      opacity: 1;
+      fill: #ff006e;
+      filter: url(#strong-glow) brightness(3);
+    }
+    50% {
+      opacity: 1;
+      fill: #00f0ff;
+      filter: url(#strong-glow) brightness(5);
+    }
+  }
+</style>
+
+<script>
+  // Easter egg: Time Travel con efectos mejorados
+  function initDeLoreanEasterEgg() {
+    const delorean = document.querySelector('.delorean-container') as HTMLElement;
+    if (!delorean) return;
+
+    let isTimeTraveling = false;
+
+    function activateTimeTravel() {
+      if (isTimeTraveling) return;
+      
+      isTimeTraveling = true;
+      delorean.classList.add('time-travel');
+      
+      // Efecto de vibración en la página
+      document.body.style.animation = 'shake 0.5s ease-in-out 3';
+      
+      // Resetear después de la animación
+      setTimeout(() => {
+        delorean.classList.remove('time-travel');
+        document.body.style.animation = '';
+        setTimeout(() => {
+          isTimeTraveling = false;
+        }, 500);
+      }, 3000);
+    }
+
+    // Escuchar comandos del terminal
+    document.addEventListener('terminal-command', ((event: CustomEvent) => {
+      const command = event.detail.command?.toLowerCase().trim();
+      
+      if (command === '88mph' || command === 'time-travel' || command === 'flux-capacitor') {
+        activateTimeTravel();
+      }
+    }) as EventListener);
+
+    // Doble click para activar
+    delorean.addEventListener('dblclick', (e) => {
+      e.preventDefault();
+      activateTimeTravel();
+    });
+  }
+
+  // Inicializar cuando el DOM esté listo
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDeLoreanEasterEgg);
+  } else {
+    initDeLoreanEasterEgg();
+  }
+</script>
+
+<style is:global>
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+    20%, 40%, 60%, 80% { transform: translateX(2px); }
+  }
+</style>
